@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb-test
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: onoratotestdb
+      MONGO_REPLICA_SET_NAME: rs0
+    command: >
+      mongod --replSet rs0 --bind_ip localhost,mongodb --keyFile /etc/secrets/keyfile --auth
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+      - ./keyfile:/etc/secrets/keyfile:ro
+    networks:
+      - db_network
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql-test
+    environment:
+      MYSQL_ROOT_PASSWORD: onoratotestdb  
+    ports:
+    - "3306:3306"
+    networks:
+      - db_network
+
+volumes:
+  mongodb_data:
+  mongodb_config:
+
+networks:
+  db_network:
